@@ -8,7 +8,7 @@ const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
+const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = process.env;
 
 const app = express();
 
@@ -17,8 +17,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
-// eslint-disable-next-line no-useless-escape
-const pattern = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;
 
 mongoose
   .connect(DB_ADDRESS, {
@@ -48,12 +46,10 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(new RegExp(pattern)),
+    name: Joi.string().required().min(2).max(30),
   }),
 }), require('./controllers/users').createUser);
-app.use('/cards', auth, require('./routes/cards'));
+app.use('/movies', auth, require('./routes/movies'));
 app.use('/users', auth, require('./routes/users'));
 
 app.use(() => { throw new NotFoundError('Ошибка 404 Страница не найдена'); });
