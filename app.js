@@ -8,7 +8,10 @@ const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = process.env;
+if (process.env.NODE_ENV !== 'production') {
+  process.env.PORT = 3000;
+  process.env.DB_ADDRESS = 'mongodb://127.0.0.1:27017/bitfilmsdb';
+}
 
 const app = express();
 
@@ -19,7 +22,7 @@ const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 
 mongoose
-  .connect(DB_ADDRESS, {
+  .connect(process.env.DB_ADDRESS, {
     useNewUrlParser: true,
   })
   .then(() => console.log('Connected'))
@@ -66,6 +69,6 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`App listening on port ${process.env.PORT}`);
 });

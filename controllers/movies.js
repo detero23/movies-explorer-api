@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const NoAccessError = require('../errors/NoAccessError');
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((movies) => res.send({ data: movies }))
     .catch(next);
 };
